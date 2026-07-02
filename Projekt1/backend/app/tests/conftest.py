@@ -66,6 +66,12 @@ def admin_token(client):
             "password": "Admin123!",
         },
     )
+    db = next(override_get_db())
+    db.execute(
+        "UPDATE users SET role = 'admin' WHERE username = 'admin'"
+    )
+    db.commit()
+    db.close()
     res = client.post(
         "/api/auth/login",
         data={"username": "admin", "password": "Admin123!"},

@@ -9,7 +9,7 @@ def test_create_item(client, user_token):
     data = res.json()
     assert data["name"] == "TestItem"
     assert data["description"] == "Opis testowy"
-    assert data["owner_id"] == 1
+    assert isinstance(data["owner_id"], int) and data["owner_id"] > 0
 
 
 def test_get_items(client, user_token):

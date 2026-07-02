@@ -4,12 +4,26 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import auth, items, users
-from app.core.database import Base, engine
+from app.core.database import Base, SessionLocal, engine
+from app.core.security import hash_password
+from app.models.user import User
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
+    db = SessionLocal()
+    if not db.query(User).filter(User.username == "admin").first():
+        db.add(
+            User(
+                username="admin",
+                email="admin@admin.pl",
+                hashed_password=hash_password("Admin123!"),
+                role="admin",
+            )
+        )
+        db.commit()
+    db.close()
     yield
 
 
